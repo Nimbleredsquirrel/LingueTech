@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
-from config import LAYERS_DIR, NUM_LAYERS, PLOTS_DIR
+from config import DATA_DIR, PLOTS_DIR, NUM_LAYERS, ALL_HIDDEN_PATH, LABELS_PATH
 
 LAYERS_TO_PLOT = [1, 6, 11, 16, 21, 26, 32]
 
@@ -29,8 +29,8 @@ def plot_pca(X: np.ndarray, y: np.ndarray, layer_idx: int):
 
 
 def plot_roc_auc_curve():
-    probing_path = os.path.join("data", "probing_results.csv")
-    mm_path = os.path.join("data", "mm_probe_label_results.csv")
+    probing_path = os.path.join(DATA_DIR, "probing_results.csv")
+    mm_path = os.path.join(DATA_DIR, "mm_probe_label_results.csv")
 
     fig, ax = plt.subplots(figsize=(9, 5))
 
@@ -65,14 +65,11 @@ def plot_roc_auc_curve():
 def main():
     os.makedirs(PLOTS_DIR, exist_ok=True)
 
+    all_hidden = np.load(ALL_HIDDEN_PATH)  # (NUM_LAYERS, n, HIDDEN_DIM)
+    labels = np.load(LABELS_PATH)
+
     for layer_idx in LAYERS_TO_PLOT:
-        path = os.path.join(LAYERS_DIR, f"layer{layer_idx}.csv")
-        if not os.path.exists(path):
-            continue
-        df = pd.read_csv(path)
-        y = df["label"].values
-        X = df.drop(columns=["label"]).values
-        plot_pca(X, y, layer_idx)
+        plot_pca(all_hidden[layer_idx - 1], labels, layer_idx)
 
     plot_roc_auc_curve()
 
