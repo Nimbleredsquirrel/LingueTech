@@ -1,6 +1,6 @@
 # LingueTech: Probing Reasoning in LLMs
 
-Probes Meta-Llama-3.1-8B hidden states to detect correct vs. wrong reasoning steps using logistic regression, mass-mean probing, LDA, and INSIDE EigenScore on the PRM800K dataset.
+Probes Llama-2-7b hidden states to detect correct vs. wrong reasoning steps using logistic regression, mass-mean probing, LDA, and INSIDE EigenScore on the PRM800K dataset.
 
 ## Project Structure
 
@@ -8,7 +8,7 @@ Probes Meta-Llama-3.1-8B hidden states to detect correct vs. wrong reasoning ste
 LingueTech/
 ├── config.py                  # paths, model name, hyperparameters, concepts
 ├── prepare_dataset.py         # PRM800K JSONL -> data/dataset.parquet
-├── extract_hidden_states.py   # Llama-3.1-8B hidden states -> layers/layer{i}.csv
+├── extract_hidden_states.py   # Llama-2-7b hidden states -> layers/layer{i}.csv
 ├── probing.py                 # logistic regression probing per layer
 ├── mass_mean_probe.py         # mass-mean and LDA probing (Geometry of Truth)
 ├── pca_viz.py                 # PCA scatter plots and ROC-AUC curve

@@ -1,6 +1,6 @@
 import os
 
-MODEL_NAME = "meta-llama/Meta-Llama-3.1-8B"
+MODEL_NAME = "meta-llama/Llama-2-7b-hf"
 
 # on Kaggle: set env vars via Kaggle Secrets or os.environ before importing config
 # HF_TOKEN  -> your HuggingFace token (needed for Llama-2)
