@@ -2,11 +2,13 @@ import os
 import numpy as np
 import pandas as pd
 import torch
+
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from config import (
-    MODEL_NAME, CACHE_DIR, HF_TOKEN, DATASET_PATH, LAYERS_DIR, DATA_DIR,
+    MODEL_NAME, CACHE_DIR, HF_TOKEN, DATASET_PATH, DATA_DIR,
     NUM_LAYERS, HIDDEN_DIM, BATCH_SIZE,
     CHECKPOINT_EVERY, HIDDEN_CHECKPOINT_PATH, HIDDEN_PROGRESS_PATH,
+    ALL_HIDDEN_PATH, LABELS_PATH,
 )
 
 
@@ -73,7 +75,6 @@ def load_checkpoint(n: int) -> tuple[np.ndarray, int]:
 
 
 def main():
-    os.makedirs(LAYERS_DIR, exist_ok=True)
     os.makedirs(DATA_DIR, exist_ok=True)
 
     df = pd.read_parquet(DATASET_PATH)
@@ -97,19 +98,16 @@ def main():
         elif batch_num % 10 == 0:
             print(f"  {end}/{n}")
 
-    print(f"Saving {NUM_LAYERS} layer CSVs...")
-    col_names = [f"f{i}" for i in range(HIDDEN_DIM)]
-    for layer_idx in range(NUM_LAYERS):
-        layer_df = pd.DataFrame(all_hidden[layer_idx], columns=col_names)
-        layer_df["label"] = labels
-        layer_df.to_csv(os.path.join(LAYERS_DIR, f"layer{layer_idx + 1}.csv"), index=False)
+    print("Saving hidden states...")
+    np.save(ALL_HIDDEN_PATH, all_hidden)
+    np.save(LABELS_PATH, np.array(labels))
 
-    # cleanup checkpoint after successful completion
     for p in [HIDDEN_CHECKPOINT_PATH, HIDDEN_PROGRESS_PATH]:
         if os.path.exists(p):
             os.remove(p)
 
-    print(f"Done. Saved {NUM_LAYERS} CSVs to {LAYERS_DIR}/")
+    size_gb = all_hidden.nbytes / 1e9
+    print(f"Done. Saved {ALL_HIDDEN_PATH} ({size_gb:.1f} GB)")
 
 
 if __name__ == "__main__":
