@@ -7,8 +7,9 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score
 from config import (
-    LAYERS_DIR, NUM_LAYERS, DATASET_PATH, DATA_DIR, PLOTS_DIR,
-    PROBE_TEST_SIZE, PROBE_RANDOM_STATE, PROBE_N_EXPERIMENTS, CONCEPTS
+    NUM_LAYERS, DATASET_PATH, DATA_DIR, PLOTS_DIR,
+    PROBE_TEST_SIZE, PROBE_RANDOM_STATE, PROBE_N_EXPERIMENTS, CONCEPTS,
+    ALL_HIDDEN_PATH,
 )
 
 
@@ -46,18 +47,17 @@ def evaluate_layer(X: np.ndarray, y: np.ndarray) -> dict:
     }
 
 
-def probe_concept(concept: str, concept_labels: np.ndarray) -> pd.DataFrame:
+def probe_concept(concept: str, concept_labels: np.ndarray, all_hidden: np.ndarray) -> pd.DataFrame:
     if len(np.unique(concept_labels)) < 2:
         raise ValueError(f"Concept '{concept}' has only one class in the data.")
 
     rows = []
-    for layer_idx in range(1, NUM_LAYERS + 1):
-        df = pd.read_csv(os.path.join(LAYERS_DIR, f"layer{layer_idx}.csv"))
-        X = df.drop(columns=["label"]).values
+    for layer_idx in range(NUM_LAYERS):
+        X = all_hidden[layer_idx]
         stats = evaluate_layer(X, concept_labels)
-        rows.append({"layer": layer_idx, **stats})
+        rows.append({"layer": layer_idx + 1, **stats})
         print(
-            f"  Layer {layer_idx:2d}  MM={rows[-1]['mm_roc_auc_mean']:.4f}  "
+            f"  Layer {layer_idx + 1:2d}  MM={rows[-1]['mm_roc_auc_mean']:.4f}  "
             f"LDA={rows[-1]['lda_roc_auc_mean']:.4f}"
         )
 
@@ -125,13 +125,14 @@ def main():
             f"Available: {list(dataset_df.columns)}"
         )
 
+    all_hidden = np.load(ALL_HIDDEN_PATH)  # (NUM_LAYERS, n, HIDDEN_DIM)
     os.makedirs(DATA_DIR, exist_ok=True)
     all_results = {}
 
     for concept in concepts_to_run:
         print(f"\nProbing concept: '{concept}'")
         labels = dataset_df[concept].values
-        results_df = probe_concept(concept, labels)
+        results_df = probe_concept(concept, labels, all_hidden)
         out_path = os.path.join(DATA_DIR, f"mm_probe_{concept}_results.csv")
         results_df.to_csv(out_path, index=False)
         print(f"  Saved to {out_path}")
