@@ -20,7 +20,7 @@ def load_model():
         cache_dir=CACHE_DIR,
         token=HF_TOKEN,
         output_hidden_states=True,
-        torch_dtype=torch.float16,
+        load_in_8bit=True,
         device_map="auto",
     )
     model.eval()

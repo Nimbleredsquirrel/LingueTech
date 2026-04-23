@@ -1,6 +1,6 @@
 import os
 
-MODEL_NAME = "meta-llama/Llama-2-7b-hf"
+MODEL_NAME = "meta-llama/Meta-Llama-3.1-8B"
 
 # on Kaggle: set env vars via Kaggle Secrets or os.environ before importing config
 # HF_TOKEN  -> your HuggingFace token (needed for Llama-2)
@@ -20,7 +20,7 @@ DATASET_PATH = os.path.join(DATA_DIR, "dataset.parquet")
 NUM_LAYERS = 33   # embedding layer + 32 transformer layers in Llama-2-7b
 HIDDEN_DIM = 4096
 MAX_SAMPLES = 5000
-BATCH_SIZE = 8
+BATCH_SIZE = 4
 
 PROBE_N_EXPERIMENTS = 5
 PROBE_TEST_SIZE = 0.2
