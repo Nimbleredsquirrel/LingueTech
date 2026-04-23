@@ -2,15 +2,15 @@ import os
 
 MODEL_NAME = "meta-llama/Llama-2-7b-hf"
 
-# on Kaggle: set env vars via Kaggle Secrets or os.environ before importing config
-# HF_TOKEN  -> your HuggingFace token (needed for Llama-2)
-# HF_CACHE_DIR -> where to store the downloaded model weights
 CACHE_DIR = os.getenv("HF_CACHE_DIR", "/kaggle/working/hf_cache")
 HF_TOKEN = os.getenv("HF_TOKEN", "")
 
 DATA_DIR = "data"
-LAYERS_DIR = "layers"
 PLOTS_DIR = "plots"
+
+# hidden states saved as numpy arrays instead of CSVs (much smaller on disk)
+ALL_HIDDEN_PATH = os.path.join(DATA_DIR, "all_hidden.npy")   # shape: (NUM_LAYERS, n, HIDDEN_DIM)
+LABELS_PATH = os.path.join(DATA_DIR, "labels.npy")
 
 # PRM800K: git lfs install && git clone https://github.com/openai/prm800k.git
 # then: cp prm800k/data/phase2/train.jsonl data/phase2_train.jsonl
@@ -31,11 +31,14 @@ CHECKPOINT_EVERY = 50
 HIDDEN_CHECKPOINT_PATH = os.path.join(DATA_DIR, "hidden_checkpoint.npy")
 HIDDEN_PROGRESS_PATH = os.path.join(DATA_DIR, "hidden_progress.txt")
 
+# PRM800K: git lfs install && git clone https://github.com/openai/prm800k.git
+# then: cp prm800k/prm800k/data/phase2_train.jsonl data/phase2_train.jsonl
+
 # INSIDE (eigenscore.py)
 # generate N responses per sample, extract hidden states at INSIDE_LAYER_IDX
-INSIDE_N_RESPONSES = 5
+INSIDE_N_RESPONSES = 3
 INSIDE_TEMPERATURE = 0.8
-INSIDE_MAX_NEW_TOKENS = 150
+INSIDE_MAX_NEW_TOKENS = 64
 INSIDE_LAYER_IDX = 16       # 0-indexed; layer 16 is mid-depth in Llama-2-7b
 INSIDE_RESPONSES_PATH = os.path.join(DATA_DIR, "inside_responses.npy")
 INSIDE_RESULTS_PATH = os.path.join(DATA_DIR, "eigenscore_results.csv")
