@@ -12,17 +12,18 @@ from config import (
 
 
 def load_model():
-    from transformers import AutoTokenizer, AutoModelForCausalLM
+    from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
     tokenizer = AutoTokenizer.from_pretrained(
         MODEL_NAME, cache_dir=CACHE_DIR, token=HF_TOKEN
     )
     tokenizer.pad_token = tokenizer.eos_token
+    bnb_config = BitsAndBytesConfig(load_in_8bit=True)
     model = AutoModelForCausalLM.from_pretrained(
         MODEL_NAME,
         cache_dir=CACHE_DIR,
         token=HF_TOKEN,
         output_hidden_states=True,
-        load_in_8bit=True,
+        quantization_config=bnb_config,
         device_map="auto",
     )
     model.eval()

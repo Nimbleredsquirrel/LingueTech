@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from config import (
     MODEL_NAME, CACHE_DIR, HF_TOKEN, DATASET_PATH, LAYERS_DIR, DATA_DIR,
     NUM_LAYERS, HIDDEN_DIM, BATCH_SIZE,
@@ -15,12 +15,13 @@ def load_model():
         MODEL_NAME, cache_dir=CACHE_DIR, token=HF_TOKEN
     )
     tokenizer.pad_token = tokenizer.eos_token
+    bnb_config = BitsAndBytesConfig(load_in_8bit=True)
     model = AutoModelForCausalLM.from_pretrained(
         MODEL_NAME,
         cache_dir=CACHE_DIR,
         token=HF_TOKEN,
         output_hidden_states=True,
-        load_in_8bit=True,
+        quantization_config=bnb_config,
         device_map="auto",
     )
     model.eval()
