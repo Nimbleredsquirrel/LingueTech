@@ -9,11 +9,11 @@ import re
 import pandas as pd
 from config import DATA_DIR, PRM800K_PATH, DATASET_PATH, MAX_SAMPLES
 
-CONCLUSION_PATTERN = re.compile(r"\b(therefore|thus|hence|so)\b", re.IGNORECASE)
-CERTAINTY_PATTERN = re.compile(r"\b(clearly|obviously|exactly|precisely|must|certainly|definitely)\b", re.IGNORECASE)
-HEDGING_PATTERN = re.compile(r"\b(maybe|might|possibly|approximately|roughly|could|perhaps|about)\b", re.IGNORECASE)
-NEGATION_PATTERN = re.compile(r"\b(not|no|never|neither|nor|cannot|can't|isn't|doesn't|doesn't)\b", re.IGNORECASE)
-ERROR_PATTERN = re.compile(r"\b(mistake|error|wrong|incorrect|invalid|false|contradiction)\b", re.IGNORECASE)
+CONCLUSION_PATTERN = re.compile(r"\b(?:therefore|thus|hence|so)\b", re.IGNORECASE)
+CERTAINTY_PATTERN = re.compile(r"\b(?:clearly|obviously|exactly|precisely|must|certainly|definitely)\b", re.IGNORECASE)
+HEDGING_PATTERN = re.compile(r"\b(?:maybe|might|possibly|approximately|roughly|could|perhaps|about)\b", re.IGNORECASE)
+NEGATION_PATTERN = re.compile(r"\b(?:not|no|never|neither|nor|cannot|can't|isn't|doesn't)\b", re.IGNORECASE)
+ERROR_PATTERN = re.compile(r"\b(?:mistake|error|wrong|incorrect|invalid|false|contradiction)\b", re.IGNORECASE)
 
 
 def load_prm800k(path: str) -> list[dict]:
