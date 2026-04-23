@@ -4,7 +4,10 @@ import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
-from config import LAYERS_DIR, NUM_LAYERS, PROBE_N_EXPERIMENTS, PROBE_TEST_SIZE, PROBE_RANDOM_STATE
+from config import (
+    DATA_DIR, NUM_LAYERS, PROBE_N_EXPERIMENTS, PROBE_TEST_SIZE, PROBE_RANDOM_STATE,
+    ALL_HIDDEN_PATH, LABELS_PATH,
+)
 
 
 METRICS = ["accuracy", "precision", "recall", "f1", "roc_auc"]
@@ -31,28 +34,27 @@ def probe_layer(X: np.ndarray, y: np.ndarray, n_experiments: int) -> dict:
 
 
 def main():
-    rows = []
-    for layer_idx in range(1, NUM_LAYERS + 1):
-        path = os.path.join(LAYERS_DIR, f"layer{layer_idx}.csv")
-        df = pd.read_csv(path)
-        y = df["label"].values
-        X = df.drop(columns=["label"]).values
+    all_hidden = np.load(ALL_HIDDEN_PATH)  # (NUM_LAYERS, n, HIDDEN_DIM)
+    labels = np.load(LABELS_PATH)
 
-        stats = probe_layer(X, y, PROBE_N_EXPERIMENTS)
-        row = {"layer": layer_idx}
+    rows = []
+    for layer_idx in range(NUM_LAYERS):
+        X = all_hidden[layer_idx]
+        stats = probe_layer(X, labels, PROBE_N_EXPERIMENTS)
+        row = {"layer": layer_idx + 1}
         for m, (mean, std) in stats.items():
             row[f"{m}_mean"] = round(mean, 4)
             row[f"{m}_std"] = round(std, 4)
         rows.append(row)
         print(
-            f"Layer {layer_idx:2d}  "
+            f"Layer {layer_idx + 1:2d}  "
             f"acc={row['accuracy_mean']:.4f}  "
             f"f1={row['f1_mean']:.4f}  "
             f"roc_auc={row['roc_auc_mean']:.4f}"
         )
 
     results_df = pd.DataFrame(rows)
-    out_path = os.path.join("data", "probing_results.csv")
+    out_path = os.path.join(DATA_DIR, "probing_results.csv")
     results_df.to_csv(out_path, index=False)
     print(f"\nSaved to {out_path}")
 
