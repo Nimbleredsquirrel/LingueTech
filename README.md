@@ -1,4 +1,4 @@
-# LingueTech: Probing Reasoning in LLMs
+# Probing Reasoning in LLMs
 
 Probes Llama-2-7b hidden states to detect correct vs. wrong reasoning steps using logistic regression, mass-mean probing, LDA, and INSIDE EigenScore on the PRM800K dataset.
 
