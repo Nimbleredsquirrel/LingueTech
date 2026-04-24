@@ -1,9 +1,9 @@
-# generated data — run scripts on Kaggle to produce these
-data/
-layers/
-plots/
+# generated data — large files ignored, result CSVs are tracked
+data/*
+!data/*_results.csv
 
-# model cache
+# hidden states, checkpoints, model outputs
+layers/
 hf_cache/
 
 # python
